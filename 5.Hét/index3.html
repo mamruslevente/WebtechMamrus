@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Számkitaláló Játék</title>
+</head>
+<body>
+
+    <h1>Számkitaláló Játék</h1>
+
+    <script>
+        const megoldas = Math.floor(Math.random() * 1000001);
+        const maxProbalkozas = 20;
+        let aktualisTippSzam = 0;
+        let kitalalta = false;
+
+        while (aktualisTippSzam < maxProbalkozas && !kitalalta) {
+            let bemenet = prompt("Kérem a tipped (0 és 1 000 000 között):");
+            
+            if (bemenet === null) {
+                break;
+            }
+
+            let tipp = parseInt(bemenet);
+
+            if (isNaN(tipp)) {
+                alert("Kérlek, érvényes számot adj meg!");
+            } else {
+                aktualisTippSzam++;
+
+                if (tipp > megoldas) {
+                    alert(aktualisTippSzam + ". tipp nem talált: A megoldás kisebb.");
+                } else if (tipp < megoldas) {
+                    alert(aktualisTippSzam + ". tipp nem talált: A megoldás nagyobb.");
+                } else {
+                    alert("Gratulálok, " + aktualisTippSzam + " lépésből eltaláltad!");
+                    kitalalta = true;
+                }
+            }
+        }
+
+        if (!kitalalta && aktualisTippSzam === maxProbalkozas) {
+            alert("Sajnos ez most nem sikerült! A megoldás: " + megoldas);
+        }
+    </script>
+
+</body>
+</html>
