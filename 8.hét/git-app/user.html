@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git App - Felhasználó adatlap</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .profile-card {
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            border: 3px solid #ccc;
+        }
+        .profile-details {
+            text-align: left;
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        .profile-details p {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="profile-card" class="card profile-card"></div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        async function loadUserProfile(userId) {
+            try {
+                const res = await fetch(`https://api.github.com/users/${userId}`, {
+                    headers: {
+                        'Authorization': 'Bearer ' + GH_ACCESS_TOKEN
+                    }
+                });
+
+                if (!res.ok) {
+                    throw Error('Hibás válasz, státuszkód:' + res.status);
+                }
+
+                const user = await res.json();
+                const profileCard = document.querySelector('#profile-card');
+
+                let htmlContent = '';
+
+                if (user.avatar_url) {
+                    htmlContent += `<img src="${user.avatar_url}" alt="Profilkép" class="profile-avatar">`;
+                }
+                
+                if (user.name) {
+                    htmlContent += `<h2>${user.name}</h2>`;
+                }
+
+                if (user.bio) {
+                    htmlContent += `<p><em>${user.bio}</em></p>`;
+                }
+
+                htmlContent += `<div class="profile-details">`;
+
+                if (user.blog) {
+                    let blogUrl = user.blog.startsWith('http') ? user.blog : 'http://' + user.blog;
+                    htmlContent += `<p><strong>Blog:</strong> <a href="${blogUrl}" target="_blank">${user.blog}</a></p>`;
+                }
+
+                if (user.location) {
+                    htmlContent += `<p><strong>Hely:</strong> ${user.location}</p>`;
+                }
+
+                if (user.public_repos !== null && user.public_repos !== undefined && user.public_repos !== "") {
+                    htmlContent += `<p><strong>Publikus repók:</strong> ${user.public_repos}</p>`;
+                }
+
+                if (user.followers !== null && user.followers !== undefined && user.followers !== "") {
+                    htmlContent += `<p><strong>Követők:</strong> ${user.followers}</p>`;
+                }
+
+                htmlContent += `</div>`;
+                profileCard.innerHTML = htmlContent;
+
+            } catch (err) {
+                console.error(err);
+                alert('Hiba történt a profil betöltése során.');
+            }
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const userId = params.get('id');
+
+        if (userId) {
+            loadUserProfile(userId);
+        } else {
+            document.querySelector('#profile-card').innerHTML = '<p>Nincs megadva felhasználó.</p>';
+        }
+    </script>
+</body>
+</html>
